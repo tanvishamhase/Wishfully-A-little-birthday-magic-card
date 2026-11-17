@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Birthday Website Maker</title>
+  <style>
+    :root {
+      --bg: #fff5f8;
+      --card: #ffffff;
+      --primary: #ff5e94;
+      --secondary: #ff9ebb;
+      --text: #33292d;
+      --accent: #ffe3ec;
+    }
+
+    body.theme-gold {
+      --bg: #fffdf5;
+      --primary: #d99b26;
+      --secondary: #f3cf7a;
+      --text: #383020;
+      --accent: #fdf3d7;
+    }
+
+    body.theme-lavender {
+      --bg: #f8f5ff;
+      --primary: #8b5cf6;
+      --secondary: #c4b5fd;
+      --text: #2e2640;
+      --accent: #ede9fe;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s ease;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    h1, h2 { margin-top: 0; }
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    /* Stepper */
+    .steps {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .step-dot {
+      flex: 1;
+      height: 8px;
+      border-radius: 99px;
+      background: #e5e7eb;
+      transition: background 0.3s;
+    }
+    .step-dot.active { background: var(--primary); }
+
+    /* Form Controls */
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; }
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--primary); }
+    textarea { min-height: 120px; resize: vertical; }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    button:hover { opacity: 0.92; }
+    button:active { transform: scale(0.98); }
+    button.secondary {
+      background: var(--accent);
+      color: var(--primary);
+    }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* Photo Thumbnails */
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .thumb-grid img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+    }
+
+    /* Preview Mode & 3D Cake */
+    #preview-screen { display: none; text-align: center; }
+    .cake-box {
+      margin: 40px auto;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.3s ease;
+    }
+    .cake-box:hover { transform: scale(1.05); }
+    .cake-emoji {
+      font-size: 110px;
+      display: block;
+      filter: drop-shadow(0 12px 16px rgba(0,0,0,0.12));
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .gift-reveal {
+      display: none;
+      text-align: left;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .letter-paper {
+      background: var(--accent);
+      padding: 24px;
+      border-radius: 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin: 20px 0;
+    }
+    .gallery-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .gallery-preview img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .countdown-pill {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- EDITOR MODE -->
+  <div id="editor-screen" class="card">
+    <span class="badge">100% Free Birthday Website Maker</span>
+    <h1>Create a Birthday Surprise</h1>
+    <p>Personalize your wishes, photos, and theme, then preview your interactive gift.</p>
+
+    <div class="steps">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+      <div class="step-dot" id="dot-3"></div>
+    </div>
+
+    <!-- STEP 1: DETAILS -->
+    <div class="step-panel active" id="step-1">
+      <h2>Step 1: Celebration Details</h2>
+      <div class="form-group">
+        <label>Choose Aesthetic Theme</label>
+        <select id="theme-select" onchange="changeTheme()">
+          <option value="default">Pastel Pink & Cute</option>
+          <option value="gold">Golden Sparkle</option>
+          <option value="lavender">Lavender Dream</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Who is celebrating? *</label>
+        <input type="text" id="recipient-name" placeholder="e.g., Priya" maxlength="150" />
+      </div>
+      <div class="form-group">
+        <label>Birthday Date (Optional — calculates age & countdown)</label>
+        <input type="date" id="birth-date" />
+      </div>
+      <div class="form-group">
+        <label>Who is throwing the party / sending this?</label>
+        <input type="text" id="sender-name" placeholder="e.g., Your Best Friend" />
+      </div>
+      <div class="btn-row">
+        <button class="secondary" onclick="fillExample()">Fill with Example</button>
+        <button onclick="goToStep(2)">Next: Wishes & Photos →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: WISHES & PHOTOS -->
+    <div class="step-panel" id="step-2">
+      <h2>Step 2: Letter & Memories</h2>
+      <div class="form-group">
+        <label>Write your birthday letter *</label>
+        <textarea id="birthday-message" placeholder="Write what you love about them, a favorite memory, and a wish for the year ahead..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Add Photos (Select multiple from your device)</label>
+        <input type="file" id="photo-input" accept="image/*" multiple onchange="handlePhotos(event)" />
+        <div class="thumb-grid" id="thumb-grid"></div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" onclick="goToStep(1)">← Back</button>
+        <button onclick="goToStep(3)">Next: Music & Preview →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: MUSIC & LAUNCH -->
+    <div class="step-panel" id="step-3">
+      <h2>Step 3: Music & Finish</h2>
+      <div class="form-group">
+        <label>Background Birthday Melody</label>
+        <select id="music-choice">
+          <option value="none">No Music</option>
+          <option value="chime">Gentle Birthday Music Box</option>
+        </select>
+      </div>
+      <p style="font-size: 0.9rem; opacity: 0.8;">
+        Tip: You can host this single HTML file for free on <strong>Netlify Drop</strong> or <strong>GitHub Pages</strong> to get a shareable link and QR code!
+      </p>
+      <div class="btn-row">
+        <button class="secondary" onclick="goToStep(2)">← Back</button>
+        <button onclick="openPreview()">Preview Birthday Gift 🎉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW / RECIPIENT MODE -->
+  <div id="preview-screen" class="card">
+    <div style="text-align: left; margin-bottom: 16px;">
+      <button class="secondary" onclick="closePreview()">← Edit Gift</button>
+    </div>
+
+    <div id="cake-stage" class="cake-box" onclick="openCake()">
+      <span class="cake-emoji">🎂</span>
+      <h2 id="cake-title">Tap the cake to open your gift!</h2>
+      <p id="cake-subtitle">A special birthday surprise awaits inside</p>
+    </div>
+
+    <div id="gift-reveal" class="gift-reveal">
+      <div style="text-align: center;">
+        <span class="countdown-pill" id="preview-badge">Happy Birthday!</span>
+        <h1 id="preview-heading">Happy Birthday!</h1>
+      </div>
+
+      <div class="letter-paper" id="preview-letter"></div>
+      <p style="text-align: right; font-weight: 600;" id="preview-sender"></p>
+
+      <div class="gallery-preview" id="preview-gallery"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let uploadedImages = [];
+
+  function changeTheme() {
+    const val = document.getElementById('theme-select').value;
+    document.body.className = val === 'default' ? '' : `theme-${val}`;
+  }
+
+  function goToStep(step) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`step-${step}`).classList.add('active');
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById(`dot-${i}`).classList.toggle('active', i <= step);
+    }
+  }
+
+  function fillExample() {
+    document.getElementById('recipient-name').value = 'Aarav';
+    document.getElementById('birth-date').value = '2001-11-15';
+    document.getElementById('sender-name').value = 'Your Favorite Squad';
+    document.getElementById('birthday-message').value =
+Use code with caution.
+"Happy Birthday! Wishing you a year filled with endless laughter, spontaneous road trips, and every goal you've been working so hard for. Thank you for always being the brightest part of every room!";
+}
+function handlePhotos(event) {
+const files = Array.from(event.target.files);
+const grid = document.getElementById('thumb-grid');
+files.forEach(file => {
+const reader = new FileReader();
+reader.onload = e => {
+uploadedImages.push(e.target.result);
+const img = document.createElement('img');
+img.src = e.target.result;
+grid.appendChild(img);
+};
+reader.readAsDataURL(file);
+});
+}
+function openPreview() {
+const name = document.getElementById('recipient-name').value.trim() || 'Friend';
+const sender = document.getElementById('sender-name').value.trim();
+const message = document.getElementById('birthday-message').value.trim() || 'Wishing you the happiest of birthdays!';
+const bdate = document.getElementById('birth-date').value;
+document.getElementById('cake-title').textContent = For ${name} 🎈;
+document.getElementById('preview-heading').textContent = Happy Birthday, ${name}!;
+document.getElementById('preview-letter').textContent = message;
+document.getElementById('preview-sender').textContent = sender ? With love, ${sender} : '';
+// Calculate age or countdown
+const badge = document.getElementById('preview-badge');
+if (bdate) {
+const birth = new Date(bdate);
+const today = new Date();
+let age = today.getFullYear() - birth.getFullYear();
+badge.textContent = Celebrating ${age} Wonderful Years ✨;
+} else {
+badge.textContent = Special Birthday Edition ✨;
+}
+// Populate gallery
+const gallery = document.getElementById('preview-gallery');
+gallery.innerHTML = '';
+uploadedImages.forEach(src => {
+const img = document.createElement('img');
+img.src = src;
+gallery.appendChild(img);
+});
+document.getElementById('editor-screen').style.display = 'none';
+document.getElementById('preview-screen').style.display = 'block';
+document.getElementById('cake-stage').style.display = 'block';
+document.getElementById('gift-reveal').style.display = 'none';
+}
+function openCake() {
+document.getElementById('cake-stage').style.display = 'none';
+document.getElementById('gift-reveal').style.display = 'block';
+if (document.getElementById('music-choice').value === 'chime') {
+playBirthdayTune();
+}
+}
+function closePreview() {
+document.getElementById('preview-screen').style.display = 'none';
+document.getElementById('editor-screen').style.display = 'block';
+}
+// Simple Web Audio API Happy Birthday melody
+function playBirthdayTune() {
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const notes = [
+[261.63, 0.3], [261.63, 0.3], [293.66, 0.6], [261.63, 0.6], [349.23, 0.6], [329.63, 1.0],
+[261.63, 0.3], [261.63, 0.3], [293.66, 0.6], [261.63, 0.6], [392.00, 0.6], [349.23, 1.0]
+];
+let time = ctx.currentTime;
+notes.forEach(([freq, dur]) => {
+const osc = ctx.createOscillator();
+const gain = ctx.createGain();
+osc.type = 'sine';
+osc.frequency.value = freq;
+gain.gain.setValueAtTime(0.15, time);
+gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.start(time);
+osc.stop(time + dur);
+time += dur + 0.05;
+});
+}
+
+
+
+---
